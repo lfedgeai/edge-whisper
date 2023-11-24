@@ -5,6 +5,7 @@ import WaveSurfer from 'wavesurfer.js';
 import RecordPlugin from 'wavesurfer.js/dist/plugins/record.js';
 import { useEffect, useRef } from 'react';
 import { cn } from '@nextui-org/react';
+import axios from 'axios';
 
 export const VoiceWaves = observer(({ onText }: { onText?: (text: string) => void }) => {
   const recordRef = useRef(null);
@@ -35,16 +36,30 @@ export const VoiceWaves = observer(({ onText }: { onText?: (text: string) => voi
     },
   }));
 
-  const uploadAudio = (blob) => {
+  const uploadAudio = async (blob) => {
     if (blob.size === 0) {
       return;
     }
     console.log('uploadAudio=>', blob);
-    // const dlUrl = URL.createObjectURL(blob).split('/');
-    // const filename = `${dlUrl[3]}.wav`;
-    // const file = new File([blob], filename);
-    // const formData = new FormData();
-    // formData.append('audio', file);
+    const dlUrl = URL.createObjectURL(blob).split('/');
+    const filename = `${dlUrl[3]}.wav`;
+    const file = new File([blob], filename);
+    const formData = new FormData();
+    formData.append('file', file);
+    // axios({
+    //   url: '',
+    //   method: 'post',
+    //   data: formData,
+    //   headers: {
+    //     'Content-Type': 'multipart/form-data',
+    //   },
+    // })
+    //   .then((res) => {
+    //     console.log('res=>', res);
+    //   })
+    //   .catch((err) => {
+    //     console.log('err=>', err);
+    //   });
   };
 
   useEffect(() => {
