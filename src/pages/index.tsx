@@ -13,10 +13,8 @@ const HomePage = observer(() => {
   const typewriterRef = useRef(null);
   useEffect(() => {
     typewriterRef.current = new Typewriter('#typewriter', {
-      loop: false,
       delay: 40,
       deleteSpeed: 10,
-      shuffle: true,
     });
     return () => {
       if (typewriterRef.current) {
