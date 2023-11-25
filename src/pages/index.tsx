@@ -14,7 +14,6 @@ const HomePage = observer(() => {
   useEffect(() => {
     typewriterRef.current = new Typewriter('#typewriter', {
       delay: 30,
-      deleteSpeed: 0,
     });
     return () => {
       if (typewriterRef.current) {
@@ -32,7 +31,7 @@ const HomePage = observer(() => {
               if (isTranscribing) {
                 typewriterRef.current.typeString(' ').typeString(text).start();
               } else {
-                typewriterRef.current.deleteAll().typeString('').start();
+                typewriterRef.current.deleteAll(0).typeString('').start();
               }
             }}
           />
