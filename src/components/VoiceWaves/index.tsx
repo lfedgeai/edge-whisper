@@ -1,8 +1,8 @@
-import { observer, useLocalObservable } from 'mobx-react-lite';
 import { Disc2, Mic } from 'lucide-react';
+import { observer, useLocalObservable } from 'mobx-react-lite';
+import { useCallback, useEffect, useRef } from 'react';
 import WaveSurfer from 'wavesurfer.js';
 import RecordPlugin from 'wavesurfer.js/dist/plugins/record.js';
-import { useCallback, useEffect, useRef } from 'react';
 
 export const VoiceWaves = observer(({ onText }: { onText?: (text: string) => void }) => {
   const recordRef = useRef(null);
@@ -37,10 +37,11 @@ export const VoiceWaves = observer(({ onText }: { onText?: (text: string) => voi
     formData.append('file', file);
     try {
       const response = await fetch('http://1.13.101.86:8000/transcribe', {
+        // const response = await fetch('http://1.13.101.86:8000/test', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        // headers: {
+        //   'Content-Type': 'multipart/form-data',
+        // },
         body: formData,
       });
       const data = await response.json();
