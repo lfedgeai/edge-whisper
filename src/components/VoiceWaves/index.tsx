@@ -4,12 +4,11 @@ import { useCallback, useEffect, useRef } from 'react';
 import WaveSurfer from 'wavesurfer.js';
 import RecordPlugin from 'wavesurfer.js/dist/plugins/record.js';
 
-export const VoiceWaves = observer(({ onText }: { onText?: (text: string) => void }) => {
+export const VoiceWaves = observer(({ onText }: { onText?: (text: string, isTranscribing: boolean) => void }) => {
   const recordRef = useRef(null);
   const recordWavesurferRef = useRef(null);
   const durationTimerRef = useRef(null);
   const recordDurationRef = useRef(0);
-
   const recordTimerRef = useRef(null);
   const isTranscribingRef = useRef(false);
 
@@ -29,7 +28,7 @@ export const VoiceWaves = observer(({ onText }: { onText?: (text: string) => voi
     if (blob.size === 0) {
       return;
     }
-    console.log('uploadAudio=>', blob);
+    // console.log('uploadAudio=>', blob);
     const dlUrl = URL.createObjectURL(blob).split('/');
     const filename = `${dlUrl[3]}.m4a`;
     const file = new File([blob], filename);
@@ -45,7 +44,8 @@ export const VoiceWaves = observer(({ onText }: { onText?: (text: string) => voi
         body: formData,
       });
       const data = await response.json();
-      console.log('data=>', data);
+      onText?.(data?.transcription || '', isTranscribingRef.current);
+      // console.log('data=>', data);
     } catch (error) {
       console.log('error=>', error);
     }
