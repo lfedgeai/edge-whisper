@@ -2,7 +2,7 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 import { Disc2, Mic } from 'lucide-react';
 import WaveSurfer from 'wavesurfer.js';
 import RecordPlugin from 'wavesurfer.js/dist/plugins/record.js';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 export const VoiceWaves = observer(({ onText }: { onText?: (text: string) => void }) => {
   const recordRef = useRef(null);
@@ -25,7 +25,7 @@ export const VoiceWaves = observer(({ onText }: { onText?: (text: string) => voi
     },
   }));
 
-  const uploadAudio = async (blob) => {
+  const uploadAudio = useCallback(async (blob) => {
     if (blob.size === 0) {
       return;
     }
@@ -48,9 +48,9 @@ export const VoiceWaves = observer(({ onText }: { onText?: (text: string) => voi
     } catch (error) {
       console.log('error=>', error);
     }
-  };
+  }, []);
 
-  const getDevices = () => {
+  const getDevices = useCallback(() => {
     RecordPlugin.getAvailableAudioDevices().then((devices) => {
       const data = devices.map((device) => {
         return {
@@ -60,7 +60,7 @@ export const VoiceWaves = observer(({ onText }: { onText?: (text: string) => voi
       });
       store.set({ devices: data });
     });
-  };
+  }, []);
 
   useEffect(() => {
     getDevices();
@@ -79,26 +79,19 @@ export const VoiceWaves = observer(({ onText }: { onText?: (text: string) => voi
     });
 
     recordRef.current = recordWavesurferRef.current.registerPlugin(RecordPlugin.create({ scrollingWaveform: true, renderRecordedAudio: false }));
-    recordRef.current.on('record-end', async (blob) => {
+    recordRef.current.on('record-end', (blob) => {
       uploadAudio(blob);
-
       if (isTranscribingRef.current) {
-        await recordRef.current.startRecording({ deviceId: store.deviceId });
+        recordRef.current.startRecording({ deviceId: store.deviceId });
       } else {
         clearInterval(recordTimerRef.current);
       }
     });
 
     return () => {
-      if (recordWavesurferRef.current) {
-        recordWavesurferRef.current.destroy();
-      }
-      if (recordTimerRef.current) {
-        clearInterval(recordTimerRef.current);
-      }
-      if (durationTimerRef.current) {
-        clearInterval(durationTimerRef.current);
-      }
+      recordWavesurferRef.current && recordWavesurferRef.current.destroy();
+      recordTimerRef.current && clearInterval(recordTimerRef.current);
+      durationTimerRef.current && clearInterval(durationTimerRef.current);
     };
   }, []);
 
@@ -116,7 +109,7 @@ export const VoiceWaves = observer(({ onText }: { onText?: (text: string) => voi
     }
   }, [store.isRecording]);
 
-  const handleRecordingClick = async () => {
+  const handleRecordingClick = useCallback(async () => {
     const isRecording = recordRef.current.isRecording();
     if (isRecording) {
       recordRef.current.stopRecording();
@@ -131,28 +124,28 @@ export const VoiceWaves = observer(({ onText }: { onText?: (text: string) => voi
         recordRef.current.stopRecording();
       }, 2000);
     }
-  };
+  }, []);
 
   return (
     <div className="py-8 px-2 lg:px-4 bg-white">
       {/* <select
-          className="sm:w-full lg:w-1/2 p-2 text-sm rounded-md bg-[#F4F4F5] dark:bg-[#27272A]"
-          value={store.deviceId}
-          onChange={(event) => {
-            store.set({ deviceId: event.target.value });
-          }}
-        >
-          <option value="" disabled>
-            Select a device
-          </option>
-          {store.devices.map((device) => {
-            return (
-              <option key={device.value} value={device.value}>
-                {device.label}
-              </option>
-            );
-          })}
-        </select> */}
+        className="w-full p-2 text-sm rounded-md bg-[#F4F4F5] dark:bg-[#27272A]"
+        value={store.deviceId}
+        onChange={(event) => {
+          store.set({ deviceId: event.target.value });
+        }}
+      >
+        <option value="" disabled>
+          Select a device
+        </option>
+        {store.devices.map((device) => {
+          return (
+            <option key={device.value} value={device.value}>
+              {device.label}
+            </option>
+          );
+        })}
+      </select> */}
       <div className="mt-2 flex items-center justify-between">
         <div className="text-base text-[#0257F8]">{store.recordDurationStr}</div>
         <div id="recordWavesurfer" className="w-full px-6"></div>
