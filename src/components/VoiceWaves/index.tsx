@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef } from 'react';
 import WaveSurfer from 'wavesurfer.js';
 import RecordPlugin from 'wavesurfer.js/dist/plugins/record.js';
 
+const API_ENDPOINT = process.env["API_ENDPOINT"] || "http://1.13.101.86:8000"
+
 export const VoiceWaves = observer(({ onText }: { onText?: (text: string, isTranscribing: boolean) => void }) => {
   const recordRef = useRef(null);
   const recordWavesurferRef = useRef(null);
@@ -35,7 +37,7 @@ export const VoiceWaves = observer(({ onText }: { onText?: (text: string, isTran
     const formData = new FormData();
     formData.append('file', file);
     try {
-      const response = await fetch('http://1.13.101.86:8000/transcribe', {
+      const response = await fetch(`${API_ENDPOINT}/transcribe`, {
         // const response = await fetch('http://1.13.101.86:8000/test', {
         method: 'POST',
         // headers: {
