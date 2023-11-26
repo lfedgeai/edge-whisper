@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import WaveSurfer from 'wavesurfer.js';
 import RecordPlugin from 'wavesurfer.js/dist/plugins/record.js';
 
-const API_ENDPOINT = process.env["API_ENDPOINT"] || "http://1.13.101.86:8000"
+const API_ENDPOINT = process.env["NEXT_PUBLIC_API_ENDPOINT"] || "http://1.13.101.86:8000"
 
 export const VoiceWaves = observer(({ onText }: { onText?: (text: string, isTranscribing: boolean) => void }) => {
   const recordRef = useRef(null);
