@@ -4,15 +4,16 @@ import { useCallback, useEffect, useRef } from 'react';
 import WaveSurfer from 'wavesurfer.js';
 import RecordPlugin from 'wavesurfer.js/dist/plugins/record.js';
 
-const API_ENDPOINT = process.env["NEXT_PUBLIC_API_ENDPOINT"] || "http://1.13.101.86:8000"
+const API_ENDPOINT = process.env['NEXT_PUBLIC_API_ENDPOINT'] || 'http://1.13.101.86:8000';
 
 export const VoiceWaves = observer(({ onText }: { onText?: (text: string, isTranscribing: boolean) => void }) => {
   const recordRef = useRef(null);
   const recordWavesurferRef = useRef(null);
   const durationTimerRef = useRef(null);
   const recordDurationRef = useRef(0);
-  const recordTimerRef = useRef(null);
   const isTranscribingRef = useRef(false);
+  const checkVolumeRef = useRef(null);
+  const canSendRef = useRef(false);
 
   const store = useLocalObservable(() => ({
     devices: [],
@@ -86,14 +87,20 @@ export const VoiceWaves = observer(({ onText }: { onText?: (text: string, isTran
       uploadAudio(blob);
       if (isTranscribingRef.current) {
         recordRef.current.startRecording({ deviceId: store.deviceId });
+        if (blob.size === 0) {
+          return;
+        }
+        setTimeout(() => {
+          checkVolume(recordRef.current.stream);
+        }, 200);
       } else {
-        clearInterval(recordTimerRef.current);
+        clearInterval(checkVolumeRef.current);
       }
     });
 
     return () => {
       recordWavesurferRef.current && recordWavesurferRef.current.destroy();
-      recordTimerRef.current && clearInterval(recordTimerRef.current);
+      checkVolumeRef.current && clearInterval(checkVolumeRef.current);
       durationTimerRef.current && clearInterval(durationTimerRef.current);
     };
   }, []);
@@ -112,6 +119,50 @@ export const VoiceWaves = observer(({ onText }: { onText?: (text: string, isTran
     }
   }, [store.isRecording]);
 
+  const checkVolume = (stream: MediaStream) => {
+    if (!stream) {
+      return;
+    }
+
+    // 创建音频上下文
+    const audioContext = new AudioContext();
+
+    // 创建音频输入节点
+    const source = audioContext.createMediaStreamSource(stream);
+
+    // 创建音频分析节点
+    const analyser = audioContext.createAnalyser();
+    analyser.fftSize = 2048;
+
+    // 连接音频节点
+    source.connect(analyser);
+
+    // 创建音频数据缓冲区
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    // 设置判断声音大小的阈值
+    const volumeThreshold = 128;
+
+    clearInterval(checkVolumeRef.current);
+    // 定时检测声音大小
+    checkVolumeRef.current = setInterval(() => {
+      analyser.getByteTimeDomainData(dataArray);
+      const volume = Math.max(...dataArray);
+      // 判断声音大小是否低于阈值
+      if (volume <= volumeThreshold) {
+        if (canSendRef.current) {
+          canSendRef.current = false;
+          recordRef.current.stopRecording();
+        }
+      } else {
+        if (!canSendRef.current) {
+          canSendRef.current = true;
+        }
+      }
+    }, 1000);
+  };
+
   const handleRecordingClick = useCallback(async () => {
     const isRecording = recordRef.current.isRecording();
     if (isRecording) {
@@ -123,9 +174,7 @@ export const VoiceWaves = observer(({ onText }: { onText?: (text: string, isTran
       isTranscribingRef.current = true;
       await recordRef.current.startRecording({ deviceId: store.deviceId });
       store.set({ isRecording: true });
-      recordTimerRef.current = setInterval(() => {
-        recordRef.current.stopRecording();
-      }, 2000);
+      checkVolume(recordRef.current.stream);
     }
   }, []);
 
