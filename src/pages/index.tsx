@@ -29,7 +29,7 @@ const HomePage = observer(() => {
           <VoiceWaves
             onText={(data, isTranscribing) => {
               const { transcription, temperature, language, no_speech_prob } = data;
-              const text = `<p style=${getStyle(temperature)}>${transcription} 【${language}】 ${no_speech_prob > 0.1 ? '【噪音】' : ''}</p>`;
+              const text = `<p style=${getStyle(temperature)}>${transcription} 【${language}】${no_speech_prob > 0.1 ? '【噪音】' : ''}</p>`;
               if (isTranscribing) {
                 typewriterRef.current.typeString(text).start();
               } else {
@@ -48,10 +48,10 @@ export default HomePage;
 
 function getStyle(temperature: number) {
   if (temperature <= 0.3) {
-    return 'width:fit-content;background:#00D500;';
+    return 'width:fit-content;background:#00D50080;';
   } else if (temperature <= 0.8) {
-    return 'width:fit-content;background:#9CD000;';
+    return 'width:fit-content;background:#9CD00080;';
   } else {
-    return 'width:fit-content;background:#DB4200;';
+    return 'width:fit-content;background:#DB42007E;';
   }
 }
