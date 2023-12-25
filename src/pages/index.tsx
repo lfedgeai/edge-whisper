@@ -51,10 +51,10 @@ export default HomePage;
 
 function getStyle(temperature: number) {
   if (temperature <= 0.3) {
-    return 'width:fit-content;background:#00D50080;';
+    return 'margin-bottom:2px;padding-left:5px;width:fit-content;background:#00EF004D;';
   } else if (temperature <= 0.8) {
-    return 'width:fit-content;background:#9CD00080;';
+    return 'margin-bottom:2px;padding-left:5px;width:fit-content;background:#FFD0004B;';
   } else {
-    return 'width:fit-content;background:#DB42007E;';
+    return 'margin-bottom:2px;padding-left:5px;width:fit-content;background:#FF42004D;';
   }
 }
