@@ -63,7 +63,7 @@ export const VoiceWaves = observer(
         onText?.(data, isTranscribingRef.current);
         // console.log('data=>', data);
       } catch (error) {
-        console.log('error=>', error);
+        console.error('error=>', error);
       }
     }, []);
 
@@ -155,7 +155,7 @@ export const VoiceWaves = observer(
       const dataArray = new Uint8Array(bufferLength);
 
       // 设置判断声音大小的阈值
-      const volumeThreshold = 140;
+      const volumeThreshold = 180;
 
       clearInterval(checkVolumeRef.current);
       // 定时检测声音大小
