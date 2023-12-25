@@ -163,6 +163,7 @@ export const VoiceWaves = observer(
         analyser.getByteTimeDomainData(dataArray);
         const volume = Math.max(...dataArray);
         // 判断声音大小是否低于阈值
+        console.log('volume=>', volume);
         if (volume <= volumeThreshold) {
           if (canSendRef.current) {
             canSendRef.current = false;
