@@ -96,13 +96,10 @@ export const VoiceWaves = observer(
       });
 
       recordRef.current = recordWavesurferRef.current.registerPlugin(RecordPlugin.create({ scrollingWaveform: true, renderRecordedAudio: false }));
-      recordRef.current.on('record-end', (blob) => {
+      recordRef.current.on('record-end', async (blob) => {
         uploadAudio(blob);
         if (isTranscribingRef.current) {
-          recordRef.current.startRecording({ deviceId: store.deviceId });
-          if (blob.size === 0) {
-            return;
-          }
+          await recordRef.current.startRecording({ deviceId: store.deviceId });
           setTimeout(() => {
             checkVolume(recordRef.current.stream);
           }, 200);
@@ -155,7 +152,7 @@ export const VoiceWaves = observer(
       const dataArray = new Uint8Array(bufferLength);
 
       // 设置判断声音大小的阈值
-      const volumeThreshold = 180;
+      const volumeThreshold = 150;
 
       clearInterval(checkVolumeRef.current);
       // 定时检测声音大小
