@@ -152,7 +152,7 @@ export const VoiceWaves = observer(
       const dataArray = new Uint8Array(bufferLength);
 
       // 设置判断声音大小的阈值
-      const volumeThreshold = 150;
+      const volumeThreshold = 140;
 
       clearInterval(checkVolumeRef.current);
       // 定时检测声音大小
@@ -160,7 +160,6 @@ export const VoiceWaves = observer(
         analyser.getByteTimeDomainData(dataArray);
         const volume = Math.max(...dataArray);
         // 判断声音大小是否低于阈值
-        console.log('volume=>', volume);
         if (volume <= volumeThreshold) {
           if (canSendRef.current) {
             canSendRef.current = false;
