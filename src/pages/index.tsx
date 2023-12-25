@@ -32,7 +32,8 @@ const HomePage = observer(() => {
               if (!transcription || !language || no_speech_prob === undefined) {
                 return;
               }
-              const text = `<p style=${getStyle(temperature)}>${transcription}【${language}】【no_speech_prob: ${no_speech_prob.toFixed(2)}】</p>`;
+              const no_speech_prob_text = no_speech_prob < 0.1 ? '' : `【no_speech_prob: ${no_speech_prob.toFixed(2)}】`;
+              const text = `<p style=${getStyle(temperature)}>${transcription}【${language}】${no_speech_prob_text}</p>`;
               if (isTranscribing) {
                 typewriterRef.current.typeString(text).start();
               } else {
