@@ -100,9 +100,7 @@ export const VoiceWaves = observer(
         uploadAudio(blob);
         if (isTranscribingRef.current) {
           await recordRef.current.startRecording({ deviceId: store.deviceId });
-          setTimeout(() => {
-            checkVolume(recordRef.current.stream);
-          }, 200);
+          checkVolume(recordRef.current.stream);
         } else {
           clearInterval(checkVolumeRef.current);
         }
@@ -154,14 +152,12 @@ export const VoiceWaves = observer(
       // 设置判断声音大小的阈值
       const volumeThreshold = 130;
 
-      clearInterval(checkVolumeRef.current);
-      // 定时检测声音大小
-      checkVolumeRef.current = setInterval(() => {
+      const check = () => {
         analyser.getByteTimeDomainData(dataArray);
         const volume = Math.max(...dataArray);
         // 判断声音大小是否低于阈值
         console.log('volume=>', volume);
-        if (volume <= volumeThreshold) {
+        if (volume < volumeThreshold) {
           if (canSendRef.current) {
             canSendRef.current = false;
             recordRef.current.stopRecording();
@@ -171,7 +167,11 @@ export const VoiceWaves = observer(
             canSendRef.current = true;
           }
         }
-      }, 1000);
+      };
+
+      // 定时检测声音大小
+      clearInterval(checkVolumeRef.current);
+      checkVolumeRef.current = setIntervalImmediately(check, 800);
     };
 
     const handleRecordingClick = useCallback(async () => {
@@ -218,3 +218,8 @@ export const VoiceWaves = observer(
     );
   },
 );
+
+function setIntervalImmediately(func, interval) {
+  func();
+  return setInterval(func, interval);
+}
