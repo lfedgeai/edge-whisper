@@ -1,5 +1,15 @@
 在线访问地址：https://edge-ai.yomo.run/
 
+## AI API GeoIP strategy
+
+API Endpoint: https://edgeai.yomo.dev
+
+1. Asia (exclude middle-east): `20.9.141.176`, Azure West US 2, Arm, Whisper.cpp
+2. Euro & Africa & Middle-East: `43.131.34.253`, Tencent Cloud, Frankfurt, T4, Whisper
+3. Others: `170.106.181.15`, Tencent Cloud, US, T4, Whisper
+
+For visualization, click here: https://geoping.gg/s/https/edgeai.yomo.dev
+
 ## Local Development
 
 First, run the development server:
