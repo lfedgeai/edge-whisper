@@ -1,5 +1,7 @@
 在线访问地址：https://edge-ai.yomo.run/
 
+**Warning**: This project has been contributed to Linux Foundation - Edge: https://github.com/lfedgeai/edge-whisper
+
 ## AI API GeoIP strategy
 
 API Endpoint: https://edgeai.yomo.dev
