@@ -29,3 +29,7 @@ To deploy this real-time speech transcription system on your own infrastructure,
   - for `NVidia` GPUs, run [backends/whisper_nvidia_t4_server.py](./backends/whisper_nvidia_t4_server.py) to load [whisper](https://github.com/openai/whisper) model.
 
 Please note: These instructions assume you have the necessary dependencies like Whisper, Whisper.cpp and YoMo Framework installed. Refer to the project documentation for further details.
+
+## Development on Arm dev machine
+
+follow [instructions](backend/arm.md) to run this demo on Arm-based processor dev machine.
