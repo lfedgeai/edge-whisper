@@ -32,4 +32,4 @@ Please note: These instructions assume you have the necessary dependencies like 
 
 ## Development on Arm dev machine
 
-follow [instructions](backend/arm.md) to run this demo on Arm-based processor dev machine.
+follow [instructions](backends/arm.md) to run this demo on Arm-based processor dev machine.
