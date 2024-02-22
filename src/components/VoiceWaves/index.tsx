@@ -42,32 +42,35 @@ export const VoiceWaves = observer(
       },
     }));
 
-    const uploadAudio = useCallback(async (blob) => {
-      if (blob.size === 0) {
-        return;
-      }
-      // console.log('uploadAudio=>', blob);
-      const dlUrl = URL.createObjectURL(blob).split('/');
-      const filename = `${dlUrl[3]}.m4a`;
-      const file = new File([blob], filename);
-      const formData = new FormData();
-      formData.append('file', file);
-      try {
-        const response = await fetch(`${API_ENDPOINT}/transcribe?lang=${lang || 'en'}`, {
-          // const response = await fetch('http://1.13.101.86:8000/test', {
-          method: 'POST',
-          // headers: {
-          //   'Content-Type': 'multipart/form-data',
-          // },
-          body: formData,
-        });
-        const data = await response.json();
-        onText?.(data, isTranscribingRef.current);
-        // console.log('data=>', data);
-      } catch (error) {
-        console.error('error=>', error);
-      }
-    }, []);
+    const uploadAudio = useCallback(
+      async (blob) => {
+        if (blob.size === 0) {
+          return;
+        }
+        // console.log('uploadAudio=>', blob);
+        const dlUrl = URL.createObjectURL(blob).split('/');
+        const filename = `${dlUrl[3]}.m4a`;
+        const file = new File([blob], filename);
+        const formData = new FormData();
+        formData.append('file', file);
+        try {
+          const response = await fetch(`${API_ENDPOINT}/transcribe?lang=${lang || 'en'}`, {
+            // const response = await fetch('http://1.13.101.86:8000/test', {
+            method: 'POST',
+            // headers: {
+            //   'Content-Type': 'multipart/form-data',
+            // },
+            body: formData,
+          });
+          const data = await response.json();
+          onText?.(data, isTranscribingRef.current);
+          // console.log('data=>', data);
+        } catch (error) {
+          console.error('error=>', error);
+        }
+      },
+      [lang],
+    );
 
     const getDevices = useCallback(() => {
       RecordPlugin.getAvailableAudioDevices().then((devices) => {
@@ -113,7 +116,7 @@ export const VoiceWaves = observer(
         checkVolumeRef.current && clearInterval(checkVolumeRef.current);
         durationTimerRef.current && clearInterval(durationTimerRef.current);
       };
-    }, []);
+    }, [lang]);
 
     useEffect(() => {
       if (store.isRecording) {
