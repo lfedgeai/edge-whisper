@@ -9,6 +9,7 @@ const API_ENDPOINT = process.env['NEXT_PUBLIC_API_ENDPOINT'] || 'http://1.13.101
 export const VoiceWaves = observer(
   ({
     onText,
+    lang,
   }: {
     onText?: (
       data: {
@@ -19,6 +20,7 @@ export const VoiceWaves = observer(
       },
       isTranscribing: boolean,
     ) => void;
+    lang?: string;
   }) => {
     const recordRef = useRef(null);
     const recordWavesurferRef = useRef(null);
@@ -51,7 +53,7 @@ export const VoiceWaves = observer(
       const formData = new FormData();
       formData.append('file', file);
       try {
-        const response = await fetch(`${API_ENDPOINT}/transcribe`, {
+        const response = await fetch(`${API_ENDPOINT}/transcribe?lang=${lang || 'en'}`, {
           // const response = await fetch('http://1.13.101.86:8000/test', {
           method: 'POST',
           // headers: {

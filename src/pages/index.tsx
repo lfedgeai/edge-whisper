@@ -1,7 +1,7 @@
-import { Card } from '@nextui-org/react';
+import { Card, Select, SelectItem } from '@nextui-org/react';
 import { observer } from 'mobx-react-lite';
 import dynamic from 'next/dynamic';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Typewriter from 'typewriter-effect/dist/core';
 
 const VoiceWaves = dynamic({
@@ -11,6 +11,10 @@ const VoiceWaves = dynamic({
 
 const HomePage = observer(() => {
   const typewriterRef = useRef(null);
+
+  const langs = ['en', 'fr', 'zh', 'pt', 'de', 'es'];
+  const [selectedLang, setSelectedLang] = useState('en');
+
   useEffect(() => {
     typewriterRef.current = new Typewriter('#typewriter', {
       delay: 30,
@@ -26,7 +30,16 @@ const HomePage = observer(() => {
     <main className="w-full min-h-[calc(100vh-70px)] p-2 flex flex-col justify-center items-center">
       <Card className="w-full lg:w-[800px] p-4 lg:p-[48px] bg-[#CFDCFF]" radius="sm" shadow="sm">
         <div className="rounded-md overflow-hidden">
+          <Select className="w-full mb-2" defaultSelectedKeys={['en']} isRequired label="Select a language" onChange={(event) => setSelectedLang(event.target.value)} radius="sm" size="sm">
+            {langs.map((lang) => (
+              <SelectItem key={lang} value={lang}>
+                {lang}
+              </SelectItem>
+            ))}
+          </Select>
+
           <VoiceWaves
+            lang={selectedLang}
             onText={(data, isTranscribing) => {
               const { transcription, temperature, language, no_speech_prob } = data;
               if (!transcription || !language || no_speech_prob === undefined) {
