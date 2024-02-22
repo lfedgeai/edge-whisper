@@ -9,6 +9,7 @@ import uvicorn
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi import Query
 from pydub.silence import split_on_silence
 from pydub import AudioSegment
 from whisper import load_model, transcribe
@@ -41,7 +42,7 @@ if WHISPER_MODEL:
 lock = threading.Lock()
 
 
-async def run_model(input_path: str, result_path: str) -> dict[str]:
+async def run_model(input_path: str, result_path: str, lang='en') -> dict[str]:
     if WHISPER_MODEL:
         with lock:
             result = transcribe(whisper_model, input_path, task='translate')
@@ -53,15 +54,14 @@ async def run_model(input_path: str, result_path: str) -> dict[str]:
         }
 
     proc = await asyncio.create_subprocess_shell(
-        f'{WHISPERCPP_BIN} -m {WHISPERCPP_MODEL} -tr -l auto \
-            -oj -of {result_path} {input_path}',
+        # f'{WHISPERCPP_BIN} -m {WHISPERCPP_MODEL} -tr -l auto -oj -of {result_path} {input_path}',
+        f'{WHISPERCPP_BIN} -m {WHISPERCPP_MODEL} -t 24 -l {lang} -oj -of {result_path} {input_path}',
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE)
     stdout, stderr = await proc.communicate()
 
-    print(f'whisper.cpp: {stdout.decode()}')
-
     result_path += '.json'
+    print(f'whisper.cpp: {result_path} - {stdout.decode()}')
     if not os.path.exists(result_path):
         raise RuntimeError(f'whisper.cpp: {stderr.decode()}')
 
@@ -82,7 +82,7 @@ async def run_model(input_path: str, result_path: str) -> dict[str]:
 
 
 @app.post('/transcribe')
-async def transcribe_audio(file: UploadFile = File(...)):
+async def transcribe_audio(file: UploadFile = File(...), lang: str = Query("en")):
     try:
         print(file.filename)
 
@@ -107,7 +107,7 @@ async def transcribe_audio(file: UploadFile = File(...)):
             aud.export(input_path, format='wav')
 
             result_path = os.path.join(tmpdir, 'result')
-            result = await run_model(input_path, result_path)
+            result = await run_model(input_path, result_path, lang)
 
         print(file.filename, result)
         return result
