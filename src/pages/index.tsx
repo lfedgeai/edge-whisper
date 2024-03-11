@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import Typewriter from 'typewriter-effect/dist/core';
 
 const VoiceWaves = dynamic({
-  loader: () => import('@/components/VoiceWaves').then((ctx) => ctx.VoiceWaves),
+  loader: () => import('@/components/VoiceWave').then((ctx) => ctx.VoiceWaves),
   ssr: false,
 });
 
