@@ -89,41 +89,48 @@ export const VoiceWaves = observer(
     return (
       <div className="py-8 px-2 lg:px-4 bg-white">
         <style jsx>{`
-        .bg-gradient-to-l {
-          background-image: linear-gradient(to left, var(--tw-gradient-stops));
-        }
-        
-        .from-\[\#2A2A2A\] {
-          --tw-gradient-from: #2A2A2A;
-          --tw-gradient-to: rgb(42 42 42 / 0);
-          --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-        }
-        
-        .from-\[\#7928CA\] {
-          --tw-gradient-from: #7928CA;
-          --tw-gradient-to: rgb(121 40 202 / 0);
-          --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-        }
-        
-        .to-\[\#008080\] {
-          --tw-gradient-to: #008080;
-        }
-        
-        .to-\[\#474747\] {
-          --tw-gradient-to: #474747;
-        }
-        
-        .to-\[\#FF0080\] {
-          --tw-gradient-to: #FF0080;
-        }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-        .low-energy-spin {
-          animation: spin 2.5s linear forwards infinite;
-        }
-        
-        .high-energy-spin {
-          animation: spin 0.6s linear forwards infinite;
-        }
+.low-energy-spin {
+  animation: spin 2.5s linear forwards infinite;
+}
+
+.high-energy-spin {
+  animation: spin 0.6s linear forwards infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+#playlist li:first-child {
+  max-height: 0;
+  opacity: 0;
+  animation: grow 1s ease-in-out forwards;
+}
+
+@keyframes grow {
+  to {
+    max-height: 100px;
+    opacity: 1;
+  }
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
         `}</style>
         <div className="mt-2 flex items-center justify-between">
           <div className="text-base text-[#0257F8]">{store.recordDurationStr}</div>
