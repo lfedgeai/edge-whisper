@@ -47,13 +47,18 @@ export const VoiceWaves = observer(
       modelURL: "/silero_vad.onnx",
       workletURL: "/vad.worklet.bundle.min.js",
       startOnLoad: false,
+      onSpeechStart: () =>{
+        console.log("[VAD] Speech Start");
+      },
       onSpeechEnd: async (audio) => {
+        console.log("[VAD] Speech End");
         const wavBuffer = utils.encodeWAV(audio)
         const file = new File([wavBuffer], "audio.wav");
         const formData = new FormData();
         formData.append('file', file);
 
         try {
+          console.time("http_req")
           const response = await fetch(`${API_ENDPOINT}/transcribe?lang=${lang || 'en'}`, {
             method: 'POST',
             body: formData,
@@ -61,11 +66,19 @@ export const VoiceWaves = observer(
           const data = await response.json();
           console.log("lang", lang, "resp", data);
           onText?.(data, true);
+          console.timeEnd("http_req")
           // text = data.transcription;
         } catch (error) {
           console.error('error=>', error);
         }
       },
+      onVADMisfire: () => {
+        console.log("[VAD] Misfire");
+      },
+      // https://github.com/ricky0123/vad/blob/master/packages/_common/src/frame-processor.ts
+      // @HayatoYagi: When I wanted to make each speech segment shorter, I tried reducing redemptionFrames and increasing negativeSpeechThreshold. https://github.com/ricky0123/vad/issues/68#issuecomment-1862599204
+      redemptionFrames: 3, // default: 8
+      negativeSpeechThreshold: 0.5-0.1,// default: 0.5 - 0.15
     });
 
     if (vad.loading) {
